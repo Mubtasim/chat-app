@@ -1,12 +1,12 @@
-import { Container, Stack } from '@mui/material';
-import UserProfile from './components/UserProfile';
+import { Container } from "@mui/material";
+import UserProfile from "./components/UserProfile";
 
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import useSound from 'use-sound';
-import notification from '../../assets/audio/notification.mp3';
-import ChatContainer from './ChatContainer';
+import { useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import useSound from "use-sound";
+import notification from "../../assets/audio/notification.mp3";
+import ChatContainer from "./ChatContainer";
 
 const ChatView = () => {
   const { messages, currentFriend } = useSelector((state) => state.chat);
@@ -25,21 +25,18 @@ const ChatView = () => {
   }, [messages]);
 
   return (
-    <Container>
+    <Container maxWidth={false} sx={{ borderRadius: 3 }}>
       <Toaster
-        position={'top-right'}
+        position={"top-right"}
         reverseOrder={false}
         toastOptions={{
           style: {
-            fontSize: '18px',
+            fontSize: "18px",
           },
         }}
       />
-      <Stack flexDirection={'row'} gap={10}>
-        <UserProfile />
-
-        <ChatContainer />
-      </Stack>
+      <UserProfile />
+      <ChatContainer />
     </Container>
   );
 };
