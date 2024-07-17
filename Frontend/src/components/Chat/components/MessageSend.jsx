@@ -1,29 +1,27 @@
-import { TextField, IconButton, Popover, Box, Avatar } from '@mui/material';
-import { BsSend, BsEmojiSmile, BsXCircle } from 'react-icons/bs';
-import { FcStackOfPhotos } from 'react-icons/fc';
-import { useEffect, useState } from 'react';
+import { Avatar, Box, IconButton, Popover, TextField } from "@mui/material";
+import EmojiPicker from "emoji-picker-react";
+import { useEffect, useState } from "react";
+import { BsEmojiSmile, BsSend, BsXCircle } from "react-icons/bs";
+import { FcStackOfPhotos } from "react-icons/fc";
+import { useDispatch, useSelector } from "react-redux";
+import io from "socket.io-client";
 import {
-  messageSend,
   fetchMessages,
   imageMessageSend,
-  messageSeen,
-  messageDelivered,
-} from '../../../store/actions/chatAction';
-import { useDispatch, useSelector } from 'react-redux';
-import EmojiPicker from 'emoji-picker-react';
-import io from 'socket.io-client';
+  messageSend,
+} from "../../../store/actions/chatAction";
 import {
   addMessages,
   updateLastMessage,
-} from '../../../store/reducers/chatReducer';
+} from "../../../store/reducers/chatReducer";
 
 const MessageSend = () => {
   const dispatch = useDispatch();
-  const socket = io('http://localhost:7000');
+  const socket = io("http://localhost:7000");
 
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [socketMessage, setSocketMessage] = useState('');
+  const [socketMessage, setSocketMessage] = useState("");
 
   const { user } = useSelector((state) => state.auth);
 
@@ -35,7 +33,7 @@ const MessageSend = () => {
 
   const inputHandle = (e) => {
     setNewMessage(e.target.value);
-    socket.emit('typing-msg', {
+    socket.emit("typing-msg", {
       senderId: user.id,
       receiverId: currentFriend._id,
       msg: e.target.value,
@@ -46,9 +44,9 @@ const MessageSend = () => {
     e.preventDefault();
     if (selectedImage) {
       const formData = new FormData();
-      formData.append('senderName', user.username);
-      formData.append('receiverId', currentFriend._id);
-      formData.append('image', selectedImage);
+      formData.append("senderName", user.username);
+      formData.append("receiverId", currentFriend._id);
+      formData.append("image", selectedImage);
 
       dispatch(imageMessageSend(formData));
       setSelectedImage(null);
@@ -63,13 +61,13 @@ const MessageSend = () => {
       dispatch(messageSend(data));
     }
 
-    socket.emit('typing-msg', {
+    socket.emit("typing-msg", {
       senderId: user.id,
       receiverId: currentFriend._id,
-      msg: '',
+      msg: "",
     });
 
-    setNewMessage('');
+    setNewMessage("");
   };
 
   const handleEmojiOpen = (event) => {
@@ -78,7 +76,7 @@ const MessageSend = () => {
 
   const sentEmonji = (emoji) => {
     setNewMessage(newMessage + emoji.emoji);
-    socket.emit('typing-msg', {
+    socket.emit("typing-msg", {
       senderId: user.id,
       receiverId: currentFriend._id,
       msg: emoji.emoji,
@@ -86,7 +84,7 @@ const MessageSend = () => {
   };
 
   const handleImageClick = () => {
-    document.getElementById('image-upload').click();
+    document.getElementById("image-upload").click();
   };
   const removeSelectedImage = () => {
     setSelectedImage(null);
@@ -97,14 +95,14 @@ const MessageSend = () => {
   }, [currentFriend._id]);
 
   useEffect(() => {
-    socket.emit('join', user.id);
-    socket.on('receiveMessage', (message) => {
+    socket.emit("join", user.id);
+    socket.on("receiveMessage", (message) => {
       // console.log('Received message:', message);
       setSocketMessage(message);
     });
 
     return () => {
-      socket.off('receiveMessage');
+      socket.off("receiveMessage");
     };
   }, [user.id]);
 
@@ -126,47 +124,48 @@ const MessageSend = () => {
         })
       );
     }
-    setSocketMessage('');
+    setSocketMessage("");
   }, [socketMessage]);
 
   return (
-    <form style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+    <form style={{ display: "flex", gap: 10, alignItems: "center" }}>
       <TextField
-        id='msg-sent'
-        placeholder='Type a Message'
-        aria-label='Type a Message'
+        id="msg-sent"
+        placeholder="Type a Message"
+        aria-label="Type a Message"
         fullWidth
-        size='small'
-        variant='standard'
+        size="small"
+        variant="outlined"
         onChange={inputHandle}
         value={newMessage}
         InputProps={{
           startAdornment: (
             <>
-              <IconButton aria-label='send' onClick={handleEmojiOpen}>
+              <IconButton aria-label="send" onClick={handleEmojiOpen}>
                 <BsEmojiSmile />
               </IconButton>
               {selectedImage && (
-                <Box position='relative' display='inline-block'>
+                <Box position="relative" display="inline-block">
                   <Avatar
                     src={URL.createObjectURL(selectedImage)}
-                    variant='square'
+                    variant="square"
                     sx={{ width: 150, height: 150 }}
                   />
                   <IconButton
-                    aria-label='remove'
+                    aria-label="remove"
                     onClick={removeSelectedImage}
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: -1,
                       right: -10,
-                      backgroundColor: 'white',
-                      padding: '2px',
-                      '&:hover': {
-                        backgroundColor: 'rgb(192,192,192)',
-                        color: 'white',
+                      backgroundColor: "white",
+                      padding: "2px",
+                      "&:hover": {
+                        backgroundColor: "rgb(192,192,192)",
+                        color: "white",
                       },
-                    }}>
+                    }}
+                  >
                     <BsXCircle />
                   </IconButton>
                 </Box>
@@ -175,14 +174,14 @@ const MessageSend = () => {
           ),
           endAdornment: (
             <>
-              <IconButton aria-label='send' onClick={sendMessage}>
+              <IconButton aria-label="send" onClick={sendMessage}>
                 <BsSend />
               </IconButton>
-              <IconButton aria-label='photo' onClick={handleImageClick}>
+              <IconButton aria-label="photo" onClick={handleImageClick}>
                 <input
-                  type='file'
-                  id='image-upload'
-                  style={{ display: 'none' }}
+                  type="file"
+                  id="image-upload"
+                  style={{ display: "none" }}
                   onChange={(e) => setSelectedImage(e.target.files[0])}
                 />
                 <FcStackOfPhotos />
@@ -196,13 +195,14 @@ const MessageSend = () => {
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
+          vertical: "top",
+          horizontal: "left",
         }}
         transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}>
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
         <Box>
           <EmojiPicker onEmojiClick={sentEmonji} />
         </Box>
